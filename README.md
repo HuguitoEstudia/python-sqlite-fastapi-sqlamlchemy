@@ -1,1 +1,2 @@
-# python-sqlite-fastapi-sqlamlchemy
+sqlalchemy
+fastapi
