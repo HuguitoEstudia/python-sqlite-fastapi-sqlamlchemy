@@ -1,6 +1,9 @@
+from typing import Optional
+
+from fastapi import HTTPException
 from models import Persona,engine,app
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, null
 
 Session = sessionmaker(bind=engine)
 
@@ -13,8 +16,8 @@ session = Session()
 # session.commit()
 
 @app.post("/create_persona/",tags=["Personas"],)
-def create_persona(nombre:str,
-                   apellido:str,
+def create_persona(nombre:str="",
+                   apellido:str="",
                    edad:int=0,
                    dni:int=1234567):
     
@@ -32,5 +35,19 @@ def get_all_personas():
     return session.query(Persona).all()
 
 @app.get("/get_persona_by_id/{item_id}",tags=["Personas"])
-def get_persona_by_id(item_id:int = 0):
-    return session.get(Persona,item_id)
+def get_persona_by_id(item_id:int):
+    response = session.get(Persona,item_id)
+    if response == None:
+        return {"Persona no encontrada"}
+    else:
+        return response
+
+
+@app.post("/delete_persona_by_id/{item_id}",tags=["Personas"])
+def delete_persona_by_id(item_id:int):
+    response = session.get(Persona,item_id)
+    if response == None:
+        return {"Persona no encontrada"}
+    else:
+        session.delete(response)
+        session.commit()
